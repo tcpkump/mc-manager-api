@@ -19,8 +19,6 @@ def list():
     try:
         items = os.listdir(SERVERS_DIR)
         directories = [item for item in items if os.path.isdir(os.path.join(SERVERS_DIR, item))]
-        if "docker-mc-orchestrator" in directories: directories.remove("docker-mc-orchestrator")
-        if "docker-mc-api" in directories: directories.remove("docker-mc-api")
         return jsonify({'message': directories})
     except Exception:
         return jsonify({'error': 'Error listing servers'}), 500
@@ -40,7 +38,7 @@ def stop():
     server = request.json.get('server')
     try:
         subprocess.run(['docker-compose', '-f', f'{SERVERS_DIR}/{server}/docker-compose.yml', 'down', '-v', '--remove-orphans'], check=True)
-        return jsonify({'message': f'Stopped stack {server}'})
+        return jsonify({'message': f'Stopped {server}'})
     except subprocess.CalledProcessError as e:
         return jsonify({'error': e.stderr.decode()}), 500
 
