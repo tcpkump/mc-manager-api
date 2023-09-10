@@ -1,4 +1,5 @@
 import subprocess
+import logging
 import time
 import sys
 import os
@@ -6,11 +7,12 @@ import os
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 
+logging.basicConfig(level=logging.INFO)
 load_dotenv()
 
 SERVERS_DIR = str(os.getenv('MC_SERVERS_DIR'))
 if not os.path.isdir(SERVERS_DIR):
-    sys.exit("SERVERS_DIR doesn't exist or is not a directory")
+    sys.exit(f"SERVERS_DIR: ({SERVERS_DIR}) doesn't exist or is not a directory")
 
 app = Flask(__name__)
 
@@ -47,12 +49,12 @@ def read_existing_time(file_path):
         with open(file_path, 'r') as file:
             try:
                 time = int(file.read().strip())
-                print(f"Read timefile, time: {time}")
+                logging.debug(f"Read timefile, time: {time}")
                 return time
             except ValueError:
                 pass
     else:
-        print("No timefile to read")
+        logging.debug("No timefile to read")
     return None
 
 def update_timefile(file_path, new_time):
@@ -64,7 +66,7 @@ def update_timefile(file_path, new_time):
         os.makedirs(directory_path, exist_ok=True)
         with open(file_path, 'w') as file:
             file.write(str(new_time))
-            print(f"Updated time in {file_path} to {new_time}")
+            logging.info(f"Updated time in {file_path} to {new_time}")
 
 @app.route('/extendtime', methods=['POST'])
 def extendtime():
@@ -81,7 +83,7 @@ def extendtime():
         for dir in dirs:
             # https://docker-minecraft-server.readthedocs.io/en/latest/misc/autopause-autostop/autostop/
             skipfile = os.path.join(server_dir, dir, '.skipfile')
-            print(f"Adding skipfile {skipfile}")
+            logging.info(f"Adding skipfile {skipfile}")
             with open(skipfile, "w"):
                 pass
 
