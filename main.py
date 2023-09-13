@@ -82,7 +82,7 @@ def extendtime():
         dirs = [d for d in os.listdir(server_dir) if os.path.isdir(os.path.join(server_dir,d))]
         for dir in dirs:
             # https://docker-minecraft-server.readthedocs.io/en/latest/misc/autopause-autostop/autostop/
-            skipfile = os.path.join(server_dir, dir, '.skipfile')
+            skipfile = os.path.join(server_dir, dir, '.skip-stop')
             logging.info(f"Adding skipfile {skipfile}")
             with open(skipfile, "w"):
                 pass
