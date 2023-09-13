@@ -30,7 +30,7 @@ def start():
     server = request.json.get('server')
     try:
         # Run the 'docker-compose up' command to start the stack
-        subprocess.run(['docker-compose', '-f', f'{SERVERS_DIR}/{server}/docker-compose.yml', 'up', '-d'], check=True)
+        subprocess.Popen(['docker-compose', '-f', f'{SERVERS_DIR}/{server}/docker-compose.yml', 'up', '-d'])
         return jsonify({'message': f'Started {server}'})
     except subprocess.CalledProcessError as e:
         return jsonify({'error': e.stderr.decode()}), 500
@@ -39,7 +39,7 @@ def start():
 def stop():
     server = request.json.get('server')
     try:
-        subprocess.run(['docker-compose', '-f', f'{SERVERS_DIR}/{server}/docker-compose.yml', 'down', '-v', '--remove-orphans'], check=True)
+        subprocess.Popen(['docker-compose', '-f', f'{SERVERS_DIR}/{server}/docker-compose.yml', 'down', '-v', '--remove-orphans'])
         return jsonify({'message': f'Stopped {server}'})
     except subprocess.CalledProcessError as e:
         return jsonify({'error': e.stderr.decode()}), 500
