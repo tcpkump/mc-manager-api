@@ -15,6 +15,26 @@ SERVERS_DIR = str(os.getenv('MC_SERVERS_DIR'))
 if not os.path.isdir(SERVERS_DIR):
     sys.exit(f"SERVERS_DIR: ({SERVERS_DIR}) doesn't exist or is not a directory")
 
+def get_mcbot_data(server: str) -> dict:
+    """
+    Gets data out of a specified yaml file which describes information about a server
+
+    $server is a relative path to a directory in $SERVERS_DIR
+    """
+    mcbot_data_file = os.path.join(SERVERS_DIR, server, "mcbot.yaml")
+    logging.info(f"Checking for mcbot config file ({mcbot_data_file})")
+    if os.path.isfile(mcbot_data_file):
+        logging.info(f"mcbot config present, loading it")
+        with open(mcbot_data_file, "r") as mcbot_data:
+            data = yaml.load(mcbot_data, Loader=yaml.FullLoader)
+            logging.debug("Read mcbot config successfully")
+        logging.debug(data)
+        return data
+    else:
+        logging.warn("Did not find mcbot config file")
+        return {}
+
+
 app = Flask(__name__)
 
 @app.route('/list', methods=['GET'])
@@ -23,42 +43,35 @@ def list():
         items = os.listdir(SERVERS_DIR)
         directories = [item for item in items if os.path.isdir(os.path.join(SERVERS_DIR, item))]
 
-        data = None
         servers = []
-        for directory in directories:
-            server_info = {"name": directory}
-            mcbot_config_file = os.path.join(SERVERS_DIR, directory, "mcbot.yaml")
-            print(f"Checking for mcbot config file ({mcbot_config_file})")
-            if os.path.isfile(mcbot_config_file):
-                print(f"mcbot config present, loading it")
-                with open(mcbot_config_file, "r") as mcbot_config:
-                    data = yaml.load(mcbot_config, Loader=yaml.FullLoader)
-                    print("Read successful")
-                    server_info["data"] = data
-                print(data)
-            else:
-                print("Did not find mcbot config file")
-                server_info["data"] = "null"
+        for server in directories:
+            server_info = dict()
+            server_info["name"] = server
+
+            data = get_mcbot_data(server)
+            server_info["data"] = data
+
             servers.append(server_info)
-        
-        print({'message': servers})
+
         return jsonify({'message': servers})
     except Exception:
         return jsonify({'error': 'Error listing servers'}), 500
 
 @app.route('/start', methods=['POST'])
 def start():
-    server = request.json.get('server')
+    server = request.json.get('server') # type: ignore
+    data = get_mcbot_data(server)
+
     try:
         # Run the 'docker-compose up' command to start the stack
         subprocess.Popen(['docker-compose', '-f', f'{SERVERS_DIR}/{server}/docker-compose.yml', 'up', '-d'])
-        return jsonify({'message': f'Started {server}'})
+        return jsonify({'message': f'Started {server}, you can access it at {data["hostname"]}'})
     except subprocess.CalledProcessError as e:
         return jsonify({'error': e.stderr.decode()}), 500
 
 @app.route('/stop', methods=['POST'])
 def stop():
-    server = request.json.get('server')
+    server = request.json.get('server')  # type: ignore
     try:
         subprocess.Popen(['docker-compose', '-f', f'{SERVERS_DIR}/{server}/docker-compose.yml', 'down', '-v', '--remove-orphans'])
         return jsonify({'message': f'Stopped {server}'})
@@ -91,8 +104,8 @@ def update_timefile(file_path, new_time):
 
 @app.route('/extendtime', methods=['POST'])
 def extendtime():
-    server = request.json.get('server')
-    days = request.json.get('days')
+    server = request.json.get('server')  # type: ignore
+    days = request.json.get('days')  # type: ignore
     seconds = int(days) * 86400
     timefile = f'/data/{server}/timefile'
     server_dir = f'{SERVERS_DIR}/{server}/data'
