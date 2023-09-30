@@ -1,6 +1,7 @@
 import subprocess
 import logging
 import time
+import yaml
 import sys
 import os
 
@@ -21,7 +22,27 @@ def list():
     try:
         items = os.listdir(SERVERS_DIR)
         directories = [item for item in items if os.path.isdir(os.path.join(SERVERS_DIR, item))]
-        return jsonify({'message': directories})
+
+        data = None
+        servers = []
+        for directory in directories:
+            server_info = {"name": directory}
+            mcbot_config_file = os.path.join(SERVERS_DIR, directory, "mcbot.yaml")
+            print(f"Checking for mcbot config file ({mcbot_config_file})")
+            if os.path.isfile(mcbot_config_file):
+                print(f"mcbot config present, loading it")
+                with open(mcbot_config_file, "r") as mcbot_config:
+                    data = yaml.load(mcbot_config, Loader=yaml.FullLoader)
+                    print("Read successful")
+                    server_info["data"] = data
+                print(data)
+            else:
+                print("Did not find mcbot config file")
+                server_info["data"] = "null"
+            servers.append(server_info)
+        
+        print({'message': servers})
+        return jsonify({'message': servers})
     except Exception:
         return jsonify({'error': 'Error listing servers'}), 500
 
