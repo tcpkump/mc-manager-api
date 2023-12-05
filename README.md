@@ -15,7 +15,7 @@ For a description of each command, see [Commands](#Commands)
 
 The API simply runs local commands to interact with docker compose stacks on the same host. It is very primitive. **It doesn't even require authentication** so one must be very careful about network access when running it.
 
-I run this in a docker container (see Dockerfile in this repo) in the same docker network as my [discord-mc-bot](https://github.com/garrettleber/discord-mcbot) which is the only client of the API, this means it is not exposed to any network outside of the virtual one on the instance it runs on.
+I run this in a docker container (see Dockerfile in this repo) in the same docker network as my [discord-mc-bot](https://github.com/tcpkump/discord-mcbot) which is the only client of the API, this means it is not exposed to any network outside of the virtual one on the instance it runs on.
 
 ## Commands
 
@@ -54,9 +54,9 @@ arguments:
 
 This command will extend the time that the server stays running. By default, the servers will shut off if no player is online for 30 minutes. This command will keep the server up even with no players online for the given number of days.
 
-Under the hood it will place a `.skip-stop`(referred to as a skipfile) file in the Minecraft server's data directory, and create a corresponding timefile for when that skipfile should be removed. A separate process [mc-skipfile-manager](https://github.com/garrettleber/mc-skipfile-manager) handles checking the timefiles and removing skipfiles.
+Under the hood it will place a `.skip-stop`(referred to as a skipfile) file in the Minecraft server's data directory, and create a corresponding timefile for when that skipfile should be removed. A separate process [mc-skipfile-manager](https://github.com/tcpkump/mc-skipfile-manager) handles checking the timefiles and removing skipfiles.
 
-For more info, view the itzg/docker-minecraft-server auto-stop documentation, as well as my [mc-skipfile-manager](https://github.com/garrettleber/mc-skipfile-manager) app mentioned.
+For more info, view the itzg/docker-minecraft-server auto-stop documentation, as well as my [mc-skipfile-manager](https://github.com/tcpkump/mc-skipfile-manager) app mentioned.
 
 ## TODO
 
