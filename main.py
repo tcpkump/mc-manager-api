@@ -65,7 +65,14 @@ def start():
     try:
         # Run the 'docker-compose up' command to start the stack
         subprocess.Popen(['docker-compose', '-f', f'{SERVERS_DIR}/{server}/docker-compose.yml', 'up', '-d'])
-        return jsonify({'message': f'Started {server}, you can access it at {data["hostname"]}'})
+        message = f"""
+        Started {server},
+        You can access it at {data["hostname"]}
+
+        Please allow time for the server to start. You have 30 minutes to connect or the server will automatically shut down.
+        If you disconnect, it will automatically shut down after 30 minutes.
+        """
+        return jsonify({'message': message.strip()})
     except subprocess.CalledProcessError as e:
         return jsonify({'error': e.stderr.decode()}), 500
 
@@ -121,7 +128,11 @@ def extendtime():
             with open(skipfile, "w"):
                 pass
 
-        return jsonify({'message': f'Extended time for {server} another {days} days'})
+        message = f"""
+        Extended time for {server} another {days} days.
+        The server will remain online for this entire time even with nobody online.
+        """
+        return jsonify({'message': message.strip()})
     except subprocess.CalledProcessError as e:
         return jsonify({'error': e.stderr.decode()}), 500
 
