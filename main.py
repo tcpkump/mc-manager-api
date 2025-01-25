@@ -20,6 +20,8 @@ def get_mcbot_data(server: str) -> dict:
     Gets data out of a specified yaml file which describes information about a server
 
     $server is a relative path to a directory in $SERVERS_DIR
+
+    TESTCHANGE
     """
     mcbot_data_file = os.path.join(SERVERS_DIR, server, "mcbot.yaml")
     logging.info(f"Checking for mcbot config file ({mcbot_data_file})")
