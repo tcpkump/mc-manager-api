@@ -25,7 +25,7 @@ jobs:
 
       # Step 3: Log in to Gitea Docker registry
       - name: Log in to Docker Registry
-        run: echo "${{ secrets.DOCKER_REGISTRY_PASSWORD }}" | docker login ${{ env.DOCKER_REGISTRY }} -u ${{ secrets.GITEA_REGISTRY_USERNAME }} --password-stdin
+        run: echo "${{ secrets.DOCKER_REGISTRY_PASSWORD }}" | docker login ${{ env.DOCKER_REGISTRY }} -u ${{ secrets.DOCKER_REGISTRY_USERNAME }} --password-stdin
 
       - name: Debug Image Name
         run: |
