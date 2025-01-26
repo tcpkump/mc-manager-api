@@ -35,7 +35,7 @@ jobs:
       # Run semantic-release to determine the version
       - name: Run semantic-release
         env:
-          GIT_CREDENTIALS: ${{ secrets.DOCKER_REGISTRY_USERNAME }}:${{ DOCKER_REGISTRY_PASSWORD }}
+          GIT_CREDENTIALS: ${{ secrets.DOCKER_REGISTRY_USERNAME }}:${{ secrets.DOCKER_REGISTRY_PASSWORD }}
         run: npx semantic-release
 
       # Set the version output as an environment variable
