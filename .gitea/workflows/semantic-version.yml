@@ -24,18 +24,18 @@ jobs:
 
       # Setup Node.js (for semantic-release)
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: "lts/*"
 
       # Install semantic-release
       - name: Install dependencies
-        run: npm install semantic-release @semantic-release/git @semantic-release/changelog @semantic-release/github
+        run: npm install semantic-release @semantic-release/git @semantic-release/changelog
 
       # Run semantic-release to determine the version
       - name: Run semantic-release
         env:
-          GIT_CREDENTIALS: ${{ secrets.DOCKER_REGISTRY_USERNAME }}:${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
 
       # Set the version output as an environment variable
